@@ -1,4 +1,4 @@
-package com.elitetrader.datasource.yahoo;
+package com.elitetrader.datasource.crystalBall.yahoo;
 
 import static org.junit.Assert.assertNotNull;
 

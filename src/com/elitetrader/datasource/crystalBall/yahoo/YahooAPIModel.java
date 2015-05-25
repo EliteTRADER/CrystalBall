@@ -1,4 +1,4 @@
-package com.elitetrader.datasource.yahoo;
+package com.elitetrader.datasource.crystalBall.yahoo;
 
 import org.joda.time.DateTime;
 
