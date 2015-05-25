@@ -9,15 +9,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 public final class YahooAPICSVMapper {
-	private final String DATE = "Date";
-	private final String OPEN = "Open";
-	private final String HIGH = "High";
-	private final String LOW = "Low";
-	private final String CLOSE = "Close";
-	private final String VOLUME = "Volume";
-	private final String ADJCLOSE = "Adj Close";
-	
-	
+
 	private final Map<String, Integer> titleToPos;
 	
 	public YahooAPICSVMapper(String[] firstline) {
@@ -28,15 +20,15 @@ public final class YahooAPICSVMapper {
 	}
 	
 	public YahooAPIModel map(String ticker, String[] rawCsv) {
-		String timeStr = rawCsv[titleToPos.get(DATE)];
+		String timeStr = rawCsv[titleToPos.get(YahooAPIModel.DATE)];
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
 		DateTime datetime = formatter.parseDateTime(timeStr);
-		double open = Double.parseDouble(rawCsv[titleToPos.get(OPEN)]);
-		double high = Double.parseDouble(rawCsv[titleToPos.get(HIGH)]);
-		double low = Double.parseDouble(rawCsv[titleToPos.get(LOW)]);
-		double close = Double.parseDouble(rawCsv[titleToPos.get(CLOSE)]);
-		long volume = Long.parseLong(rawCsv[titleToPos.get(VOLUME)]);
-		double adjclose = Double.parseDouble(rawCsv[titleToPos.get(ADJCLOSE)]);
+		double open = Double.parseDouble(rawCsv[titleToPos.get(YahooAPIModel.OPEN)]);
+		double high = Double.parseDouble(rawCsv[titleToPos.get(YahooAPIModel.HIGH)]);
+		double low = Double.parseDouble(rawCsv[titleToPos.get(YahooAPIModel.LOW)]);
+		double close = Double.parseDouble(rawCsv[titleToPos.get(YahooAPIModel.CLOSE)]);
+		long volume = Long.parseLong(rawCsv[titleToPos.get(YahooAPIModel.VOLUME)]);
+		double adjclose = Double.parseDouble(rawCsv[titleToPos.get(YahooAPIModel.ADJCLOSE)]);
 		return new YahooAPIModel(ticker, datetime, open, high, low, close, volume, adjclose);
 	}
 }
