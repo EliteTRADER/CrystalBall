@@ -1,4 +1,4 @@
-package com.elitetrader.crystalBall.datasource.yahoo;
+package com.elitetrader.crystalball.datasource.yahoo;
 
 import java.util.Collections;
 import java.util.HashMap;
