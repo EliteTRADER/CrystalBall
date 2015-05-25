@@ -1,4 +1,4 @@
-package com.elitetrader.datasource.crystalBall.yahoo;
+package com.elitetrader.crystalBall.datasource.yahoo;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
