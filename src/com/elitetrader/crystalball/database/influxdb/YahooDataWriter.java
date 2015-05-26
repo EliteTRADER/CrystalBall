@@ -3,6 +3,7 @@ package com.elitetrader.crystalball.database.influxdb;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
@@ -16,6 +17,7 @@ public class YahooDataWriter extends InfluxDBBase implements Runnable {
 	private final Configuration config;
 	
 	private final String databaseName;
+	private final static long QUEUEWAITTIME = 30;
 	
 	private final static Logger logger = Logger.getLogger(YahooDataWriter.class);
 	
@@ -53,7 +55,8 @@ public class YahooDataWriter extends InfluxDBBase implements Runnable {
 	public void run() {
 		for(;;) {
 			try {
-				YahooAPIModel model = pipline.take();
+				YahooAPIModel model = pipline.poll(QUEUEWAITTIME, TimeUnit.SECONDS);
+				if(model==null) break;
 				// translate into column and values
 				List<String> title = new ArrayList<String>();
 				List<Object> value = new ArrayList<Object>();
@@ -65,5 +68,6 @@ public class YahooDataWriter extends InfluxDBBase implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		logger.info("Completed writing Yahoo data to database.");
 	}
 }
