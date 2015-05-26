@@ -15,11 +15,15 @@ public class YahooDataWriter extends InfluxDBBase implements Runnable {
 	private final BlockingQueue<YahooAPIModel> pipline;
 	private final Configuration config;
 	
+	private final String databaseName;
+	
 	private final static Logger logger = Logger.getLogger(YahooDataWriter.class);
 	
 	public YahooDataWriter(BlockingQueue<YahooAPIModel> queue, Configuration configuration) {
 		this.pipline = queue;
 		this.config = configuration;
+		this.databaseName = config.getString("databasename", "crystalball");
+		
 		if(config.getString("env").equals("local")) this.db = getNewLocalConnection();
 		else this.db = getNewRemoteConnection();
 	}
@@ -41,7 +45,7 @@ public class YahooDataWriter extends InfluxDBBase implements Runnable {
 		title.add(YahooAPIModel.HIGH); 		value.add(model.getHigh());
 		title.add(YahooAPIModel.LOW);		value.add(model.getLow());
 		title.add(YahooAPIModel.VOLUME);	value.add(model.getVolume());
-		title.add(YahooAPIModel.ADJCLOSE);	value.add(model.getAdjustedClose());
+		title.add(YahooAPIModel.ADJCLOSE);	value.add(model.getAdjustedClose());	
 		
 		return model.getTicker();
 	}
@@ -54,7 +58,7 @@ public class YahooDataWriter extends InfluxDBBase implements Runnable {
 				List<String> title = new ArrayList<String>();
 				List<Object> value = new ArrayList<Object>();
 				String ticker = serialToDBFormat(title, value, model);
-				this.write(ticker, title.toArray(new String[title.size()]), value.toArray());
+				this.write(databaseName, ticker, title.toArray(new String[title.size()]), value.toArray());
 				
 			} catch (InterruptedException e) {
 				logger.error(e.getMessage());

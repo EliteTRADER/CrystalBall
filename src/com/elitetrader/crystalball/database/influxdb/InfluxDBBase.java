@@ -35,8 +35,8 @@ public abstract class InfluxDBBase {
 		return false;
 	}
 	
-	protected void write(String databaseName, String[] columns, Object[] values) {
-		Serie serie = new Serie.Builder(databaseName).columns(columns).values(values).build();
+	protected void write(String databaseName, String tablename, String[] columns, Object[] values) {
+		Serie serie = new Serie.Builder(tablename).columns(columns).values(values).build();
 		db.write(databaseName, TimeUnit.MILLISECONDS, serie);
 	}
 	

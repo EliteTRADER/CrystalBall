@@ -29,14 +29,16 @@ public class YahooDataWriterTest {
 		queue = new ArrayBlockingQueue<YahooAPIModel>(QUEUESIZE);
 		Configuration newconfig = new BaseConfiguration();
 		newconfig.addProperty("env", "local");
+		newconfig.addProperty("databasename", "crystalball-test");
 		config = newconfig;
 		
 		yhooWriter = new YahooDataWriter(queue, config);
 		List<String> symbolList = new ArrayList<String>();
 		symbolList.add("aapl");
 		
-		for(String symbol : symbolList)
-			if(!yhooWriter.hasThisDatabase(symbol)) yhooWriter.createDB(symbol);
+		// Check if I need to create new database
+		if(!yhooWriter.hasThisDatabase(newconfig.getString("databasename"))) 
+			yhooWriter.createDB(newconfig.getString("databasename"));
 		
 		urlConn = new YahooAPIConnector(queue, symbolList);
 	}
@@ -52,6 +54,7 @@ public class YahooDataWriterTest {
 		urlReader.start();
 		dbWriter.start();
 		urlReader.join();
+		Thread.sleep(5000);
 	}
 
 }

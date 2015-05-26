@@ -1,7 +1,5 @@
 package com.elitetrader.crystalball.database.influxdb;
 
-import static org.junit.Assert.fail;
-
 import java.util.concurrent.TimeUnit;
 
 import org.influxdb.InfluxDB;
