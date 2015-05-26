@@ -54,7 +54,7 @@ public class YahooDataWriterTest {
 		urlReader.start();
 		dbWriter.start();
 		urlReader.join();
-		Thread.sleep(5000);
+		dbWriter.join();
 	}
 
 }
