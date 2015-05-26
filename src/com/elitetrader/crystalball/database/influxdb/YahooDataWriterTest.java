@@ -22,6 +22,7 @@ public class YahooDataWriterTest {
 	BlockingQueue<YahooAPIModel> queue;
 	
 	private YahooDataWriter yhooWriter;
+	
 	private YahooAPIConnector urlConn;
 
 	@Before
@@ -51,6 +52,8 @@ public class YahooDataWriterTest {
 	public void test() throws InterruptedException {
 		Thread dbWriter = new Thread(yhooWriter);
 		Thread urlReader = new Thread(urlConn);
+		new Thread(new YahooDataWriter(queue, config)).start();
+		new Thread(new YahooDataWriter(queue, config)).start();
 		urlReader.start();
 		dbWriter.start();
 		urlReader.join();

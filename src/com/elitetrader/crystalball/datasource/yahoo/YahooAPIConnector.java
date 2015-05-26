@@ -45,6 +45,8 @@ public class YahooAPIConnector implements Runnable{
 				} finally {
 					reader.close();
 					in.close();
+					// put in poison pill
+					pipline.put(YahooAPIModel.getPoisonPill());
 				}
 				logger.info("End of Processing, " + symbol);
 			}

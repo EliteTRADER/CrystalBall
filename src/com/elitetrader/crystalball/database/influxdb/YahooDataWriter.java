@@ -17,9 +17,14 @@ public class YahooDataWriter extends InfluxDBBase implements Runnable {
 	private final Configuration config;
 	
 	private final String databaseName;
-	private final static long QUEUEWAITTIME = 30;
-	
+
 	private final static Logger logger = Logger.getLogger(YahooDataWriter.class);
+	
+	// This is the same across all Yahoo API
+	private final String[] TITLE = {"time", YahooAPIModel.OPEN,YahooAPIModel.CLOSE,YahooAPIModel.HIGH,
+									YahooAPIModel.LOW, YahooAPIModel.VOLUME, YahooAPIModel.ADJCLOSE};
+	
+	private boolean isTheEnd = false;
 	
 	public YahooDataWriter(BlockingQueue<YahooAPIModel> queue, Configuration configuration) {
 		this.pipline = queue;
@@ -36,37 +41,47 @@ public class YahooDataWriter extends InfluxDBBase implements Runnable {
 		return null;
 	}
 	
-	private String serialToDBFormat(List<String> title, List<Object> value, YahooAPIModel model) {
+	private String serialToDBFormat(List<Object[]> value, List<YahooAPIModel> models) {
 		// translate time to epoch time
-		DateTime datetime = model.getTime();
-		long epochTime = datetime.getMillis();
-		
-		title.add("time"); 					value.add(epochTime);
-		title.add(YahooAPIModel.OPEN);  	value.add(model.getOpen());
-		title.add(YahooAPIModel.CLOSE); 	value.add(model.getClose());
-		title.add(YahooAPIModel.HIGH); 		value.add(model.getHigh());
-		title.add(YahooAPIModel.LOW);		value.add(model.getLow());
-		title.add(YahooAPIModel.VOLUME);	value.add(model.getVolume());
-		title.add(YahooAPIModel.ADJCLOSE);	value.add(model.getAdjustedClose());	
-		
-		return model.getTicker();
+		for(int i=0; i<models.size(); i++) {
+			YahooAPIModel model = models.get(i);
+			if(model.getTicker().equals(YahooAPIModel.POISONPILL)) {
+				isTheEnd = true;
+				continue;
+			}
+			DateTime datetime = model.getTime();
+			long epochTime = datetime.getMillis();
+			Object[] elem = new Object[TITLE.length];
+			elem[0] = epochTime; 		elem[1] = model.getOpen();
+			elem[2] = model.getClose(); elem[3] = model.getHigh();
+			elem[4] = model.getLow(); 	elem[5] = model.getVolume();
+			elem[6] = model.getAdjustedClose();
+			value.add(elem);
+		}
+		return models.get(0).getTicker();
 	}
 	
 	public void run() {
-		for(;;) {
-			try {
-				YahooAPIModel model = pipline.poll(QUEUEWAITTIME, TimeUnit.SECONDS);
-				if(model==null) break;
+		try {
+			while (!isTheEnd) {
+				List<YahooAPIModel> models = new ArrayList<YahooAPIModel>();
+				YahooAPIModel model = pipline.take();
+				// This would prevent the first item is poison pill
+				if (model.getTicker().equals(YahooAPIModel.POISONPILL))
+					break;
+				else
+					models.add(model);
+				pipline.drainTo(models);
 				// translate into column and values
-				List<String> title = new ArrayList<String>();
-				List<Object> value = new ArrayList<Object>();
-				String ticker = serialToDBFormat(title, value, model);
-				this.write(databaseName, ticker, title.toArray(new String[title.size()]), value.toArray());
-				
-			} catch (InterruptedException e) {
-				logger.error(e.getMessage());
-				e.printStackTrace();
+				List<Object[]> value = new ArrayList<Object[]>();
+				String ticker = serialToDBFormat(value, models);
+				this.write(databaseName, ticker, TITLE, value);
 			}
+			// Put back poison pill to pipline in order to shut down other writer
+			pipline.put(YahooAPIModel.getPoisonPill());
+		} catch (InterruptedException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
 		}
 		logger.info("Completed writing Yahoo data to database.");
 	}

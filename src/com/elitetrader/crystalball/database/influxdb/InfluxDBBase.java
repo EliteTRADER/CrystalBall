@@ -8,6 +8,7 @@ import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Database;
 import org.influxdb.dto.Pong;
 import org.influxdb.dto.Serie;
+import org.influxdb.dto.Serie.Builder;
 
 public abstract class InfluxDBBase {
 	protected final String localDBUrl = "http://localhost:8086";
@@ -35,9 +36,17 @@ public abstract class InfluxDBBase {
 		return false;
 	}
 	
+	// Single data point write
 	protected void write(String databaseName, String tablename, String[] columns, Object[] values) {
 		Serie serie = new Serie.Builder(tablename).columns(columns).values(values).build();
 		db.write(databaseName, TimeUnit.MILLISECONDS, serie);
+	}
+	
+	// Write multiple values
+	protected void write(String databaseName, String tablename, String[] columns, List<Object[]>values) {
+		Builder builder = new Serie.Builder(tablename).columns(columns);
+		for(int i=0; i<values.size(); i++) builder.values(values.get(i));
+		db.write(databaseName, TimeUnit.MILLISECONDS, builder.build());
 	}
 	
 	protected void createDB(String databaseName) {

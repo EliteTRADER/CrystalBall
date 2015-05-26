@@ -7,6 +7,10 @@ import org.joda.time.DateTime;
  * */
 
 public class YahooAPIModel {
+	public static final int NUMOFCOL = 7;
+	
+	public static final String POISONPILL = "yahooPoisonPill";
+	
 	public static final String DATE = "Date";
 	public static final String OPEN = "Open";
 	public static final String HIGH = "High";
@@ -34,6 +38,10 @@ public class YahooAPIModel {
 		this.close = close;
 		this.volume = volume;
 		this.adjustedClose = adjustedClose;
+	}
+	
+	public static YahooAPIModel getPoisonPill() {
+		return new YahooAPIModel(POISONPILL,null,0,0,0,0,0,0);
 	}
 
 	public String getTicker() {
