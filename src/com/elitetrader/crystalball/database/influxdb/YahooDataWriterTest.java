@@ -36,6 +36,9 @@ public class YahooDataWriterTest {
 		yhooWriter = new YahooDataWriter(queue, config);
 		List<String> symbolList = new ArrayList<String>();
 		symbolList.add("aapl");
+		symbolList.add("euo");
+		symbolList.add("hedj");
+		symbolList.add("gs");
 		
 		// Check if I need to create new database
 		if(!yhooWriter.hasThisDatabase(newconfig.getString("databasename"))) 
