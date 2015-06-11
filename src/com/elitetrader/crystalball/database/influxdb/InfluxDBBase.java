@@ -49,6 +49,11 @@ public abstract class InfluxDBBase {
 		db.write(databaseName, TimeUnit.MILLISECONDS, builder.build());
 	}
 	
+	// Read SQL
+	protected List<Serie> executeQuery(String databaseName, String query) {
+		return db.query(databaseName, query, TimeUnit.MILLISECONDS);
+	}
+	
 	protected void createDB(String databaseName) {
 		db.createDatabase(databaseName);
 	}

@@ -1,5 +1,8 @@
 package com.elitetrader.crystalball.database.influxdb;
 
+import static org.junit.Assert.*;
+
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.influxdb.InfluxDB;
@@ -26,9 +29,16 @@ public class InfluxDBBasicTest {
 	public void test() {
 		final String dbName = "TestDB";
 	
+		this.influxdb.createDatabase(dbName);
+		
 		Serie serie = new Serie.Builder("customTime").columns("value1", "value2", "time")
 						.values(System.currentTimeMillis(), 5, System.currentTimeMillis()).build();
 		this.influxdb.write(dbName, TimeUnit.MILLISECONDS, serie);
+		
+		List<Serie> data = influxdb.query(dbName, "select * from customTime", TimeUnit.MILLISECONDS);
+		assertEquals(data.isEmpty(), false);
+		
+		this.influxdb.deleteDatabase(dbName);
 		
 	}
 
