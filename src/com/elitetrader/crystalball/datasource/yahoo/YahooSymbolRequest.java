@@ -6,7 +6,7 @@ import org.joda.time.DateTime;
  *  Docs: https://code.google.com/p/yahoo-finance-managed/wiki/csvHistQuotesDownload
  * */
 
-final class YahooSymbolRequest {
+final public class YahooSymbolRequest {
 	private static String baseURL = "http://ichart.finance.yahoo.com/table.csv?s=";
 	private String symbol;
 	private DateTime fromDate;
@@ -21,5 +21,14 @@ final class YahooSymbolRequest {
 	public YahooSymbolRequest(String symbol, DateTime fromDate) {
 		this.symbol = symbol;
 		this.fromDate = fromDate;
+	}
+	
+	public String getSymbol() {
+		return symbol;
+	}
+	
+	@Override
+	public String toString() {
+		return symbol + " From: " + fromDate.toString();
 	}
 }

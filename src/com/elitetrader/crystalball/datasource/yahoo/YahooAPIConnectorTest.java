@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,8 +20,8 @@ public class YahooAPIConnectorTest {
 	@Before
 	public void setUp() {
 		queue.clear();
-		List<String> symbolList = new ArrayList<String>();
-		symbolList.add("aapl");
+		List<YahooSymbolRequest> symbolList = new ArrayList<YahooSymbolRequest>();
+		symbolList.add(new YahooSymbolRequest("aapl", new DateTime(2000,1,1,0,0)));
 		conn = new YahooAPIConnector(queue, symbolList);
 	}
 

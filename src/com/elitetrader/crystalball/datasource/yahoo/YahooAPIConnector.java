@@ -16,23 +16,22 @@ import com.opencsv.CSVReader;
  * 
  */
 public class YahooAPIConnector implements Runnable{
-	private final String baseUrl = "http://ichart.finance.yahoo.com/table.csv?s=";
 	private final BlockingQueue<YahooAPIModel> pipline;
-	private final List<String> symbolList;
+	private final List<YahooSymbolRequest> requestList;
 	
 	private final static Logger logger = Logger.getLogger(YahooAPIConnector.class);
 	
-	public YahooAPIConnector(BlockingQueue<YahooAPIModel> pipline, List<String> symbolList) {
+	public YahooAPIConnector(BlockingQueue<YahooAPIModel> pipline, List<YahooSymbolRequest> requestList) {
 		this.pipline = pipline;
-		this.symbolList = symbolList;
+		this.requestList = requestList;
 	}
 
 	public void run() {
-		logger.info("start processing symbol list:\n" + symbolList.toString());
+		logger.info("start processing symbol list:\n" + requestList.toString());
 		try {
-			for(String symbol : symbolList) {
-				logger.info("Processing: " + symbol);
-				final String url = baseUrl + symbol;
+			for(YahooSymbolRequest symbolRequest : requestList) {
+				logger.info("Processing: " + symbolRequest);
+				final String url = symbolRequest.toRequestURL();
 				BufferedReader in = new BufferedReader(new InputStreamReader(new URL(url).openStream()));
 				CSVReader reader = new CSVReader(in);
 				try {
@@ -40,7 +39,7 @@ public class YahooAPIConnector implements Runnable{
 					YahooAPICSVMapper mapper = new YahooAPICSVMapper(title);
 					String [] nextLine;
 					while((nextLine = reader.readNext())!=null) {
-						pipline.put(mapper.map(symbol, nextLine));
+						pipline.put(mapper.map(symbolRequest.getSymbol(), nextLine));
 					}
 				} finally {
 					reader.close();
@@ -48,7 +47,7 @@ public class YahooAPIConnector implements Runnable{
 					// put in poison pill
 					pipline.put(YahooAPIModel.getPoisonPill());
 				}
-				logger.info("End of Processing, " + symbol);
+				logger.info("End of Processing, " + symbolRequest);
 			}
 		} catch(Exception e) {
 			logger.error("Exception : " + e.getMessage());

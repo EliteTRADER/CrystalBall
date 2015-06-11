@@ -7,12 +7,14 @@ import java.util.concurrent.BlockingQueue;
 
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.elitetrader.crystalball.datasource.yahoo.YahooAPIConnector;
 import com.elitetrader.crystalball.datasource.yahoo.YahooAPIModel;
+import com.elitetrader.crystalball.datasource.yahoo.YahooSymbolRequest;
 
 public class YahooDataWriterTest {
 	
@@ -34,11 +36,11 @@ public class YahooDataWriterTest {
 		config = newconfig;
 		
 		yhooWriter = new YahooDataWriter(queue, config);
-		List<String> symbolList = new ArrayList<String>();
-		symbolList.add("aapl");
-		symbolList.add("euo");
-		symbolList.add("hedj");
-		symbolList.add("gs");
+		List<YahooSymbolRequest> symbolList = new ArrayList<YahooSymbolRequest>();
+		symbolList.add(new YahooSymbolRequest("aapl", new DateTime(2000,1,1,0,0)));
+		symbolList.add(new YahooSymbolRequest("euo", new DateTime(2015,1,1,0,0)));
+		symbolList.add(new YahooSymbolRequest("hedj", new DateTime(2015,2,1,0,0)));
+		symbolList.add(new YahooSymbolRequest("gs", new DateTime(2015,3,1,0,0)));
 		
 		// Check if I need to create new database
 		if(!yhooWriter.hasThisDatabase(newconfig.getString("databasename"))) 
