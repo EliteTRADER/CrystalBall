@@ -12,10 +12,14 @@ final public class YahooSymbolRequest {
 	private DateTime fromDate;
 	
 	public String toRequestURL() {
-		return baseURL + symbol + 
+		if(fromDate==null) return baseURL + symbol;
+		else return baseURL + symbol + 
 				"&a=" + (fromDate.getMonthOfYear()-1) + 
 				"&b=" + (fromDate.getDayOfMonth()) +
 				"&c=" + (fromDate.getYear());
+	}
+	public YahooSymbolRequest(String symbol) {
+		this(symbol, null);
 	}
 	
 	public YahooSymbolRequest(String symbol, DateTime fromDate) {
@@ -29,6 +33,6 @@ final public class YahooSymbolRequest {
 	
 	@Override
 	public String toString() {
-		return symbol + " From: " + fromDate.toString();
+		return symbol + (fromDate != null ? " From: " + fromDate.toString() : "");
 	}
 }

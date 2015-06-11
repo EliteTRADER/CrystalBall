@@ -98,8 +98,4 @@ public class YahooDataWriter extends InfluxDBBase implements Runnable {
 		}
 		logger.info("Completed writing Yahoo data to database.");
 	}
-	
-	public List<Serie> getTop5DataPoints(String symbol) {
-		return this.executeQuery(databaseName, "select * from " + symbol + " limit 5");
-	}
 }

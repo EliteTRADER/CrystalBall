@@ -28,7 +28,7 @@ public abstract class InfluxDBBase {
 		return "ok".equalsIgnoreCase(result.getStatus());
 	}
 	
-	protected boolean hasThisDatabase(String databaseName) {
+	public boolean hasThisDatabase(String databaseName) {
 		List<Database> result = db.describeDatabases();
 		for(Database table: result)
 			if(databaseName.equals(table.getName()))
@@ -54,7 +54,7 @@ public abstract class InfluxDBBase {
 		return db.query(databaseName, query, TimeUnit.MILLISECONDS);
 	}
 	
-	protected void createDB(String databaseName) {
+	public void createDB(String databaseName) {
 		db.createDatabase(databaseName);
 	}
 }
