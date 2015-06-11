@@ -9,6 +9,7 @@ import java.util.concurrent.BlockingQueue;
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 import org.influxdb.InfluxDB;
+import org.influxdb.dto.Serie;
 import org.joda.time.DateTime;
 
 import com.elitetrader.crystalball.datasource.yahoo.YahooAPIModel;
@@ -96,5 +97,9 @@ public class YahooDataWriter extends InfluxDBBase implements Runnable {
 			e.printStackTrace();
 		}
 		logger.info("Completed writing Yahoo data to database.");
+	}
+	
+	public List<Serie> getTop5DataPoints(String symbol) {
+		return this.executeQuery(databaseName, "select * from " + symbol + " limit 5");
 	}
 }

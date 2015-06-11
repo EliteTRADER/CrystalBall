@@ -7,6 +7,7 @@ import java.util.concurrent.BlockingQueue;
 
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
+import org.influxdb.dto.Serie;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -46,7 +47,7 @@ public class YahooDataWriterTest {
 		if(!yhooWriter.hasThisDatabase(newconfig.getString("databasename"))) 
 			yhooWriter.createDB(newconfig.getString("databasename"));
 		
-		urlConn = new YahooAPIConnector(queue, symbolList);
+		urlConn = new YahooAPIConnector(queue, symbolList);		
 	}
 
 	@After
@@ -57,7 +58,6 @@ public class YahooDataWriterTest {
 	public void test() throws InterruptedException {
 		Thread dbWriter = new Thread(yhooWriter);
 		Thread urlReader = new Thread(urlConn);
-		new Thread(new YahooDataWriter(queue, config)).start();
 		new Thread(new YahooDataWriter(queue, config)).start();
 		urlReader.start();
 		dbWriter.start();

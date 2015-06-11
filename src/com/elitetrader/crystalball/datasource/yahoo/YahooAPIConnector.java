@@ -44,11 +44,12 @@ public class YahooAPIConnector implements Runnable{
 				} finally {
 					reader.close();
 					in.close();
-					// put in poison pill
-					pipline.put(YahooAPIModel.getPoisonPill());
 				}
 				logger.info("End of Processing, " + symbolRequest);
 			}
+			// put in poison pill
+			pipline.put(YahooAPIModel.getPoisonPill());
+			logger.info("YahooAPI completes processing, put in poison pill for writers.");
 		} catch(Exception e) {
 			logger.error("Exception : " + e.getMessage());
 		}		
